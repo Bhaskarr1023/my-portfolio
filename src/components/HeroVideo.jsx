@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Hls from "hls.js";
 
 export const HeroVideo = ({ src, poster = "" }) => {
   const videoRef = useRef(null);
@@ -13,51 +12,61 @@ export const HeroVideo = ({ src, poster = "" }) => {
     const isHls = typeof src === "string" && src.includes(".m3u8");
 
     if (!isHls) {
-      // Standard Direct MP4 / WebM playback
+      // Standard Direct MP4 / WebM playback without loading HLS library
       video.src = src;
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Autoplay fallback if needed
+          // Autoplay fallback handling
         });
       }
       return;
     }
 
-    // Check native HLS playback (Safari/iOS)
+    // Dynamic HLS.js loading only when an actual .m3u8 stream is supplied
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src;
-    } else if (Hls.isSupported()) {
-      const hls = new Hls({
-        maxMaxBufferLength: 10,
-        enableWorker: true,
-        lowLatencyMode: true
-      });
-      hlsRef.current = hls;
-      
-      hls.loadSource(src);
-      hls.attachMedia(video);
-
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              hls.startLoad();
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              hls.recoverMediaError();
-              break;
-            default:
-              console.error("Fatal HLS playback error, shutting down HLS interface.");
-              setLoadError(true);
-              hls.destroy();
-              break;
-          }
-        }
-      });
     } else {
-      console.warn("HLS streaming is not supported on this browser.");
-      setLoadError(true);
+      import("hls.js")
+        .then(({ default: Hls }) => {
+          if (!Hls.isSupported()) {
+            console.warn("HLS streaming is not supported on this browser.");
+            setLoadError(true);
+            return;
+          }
+
+          const hls = new Hls({
+            maxMaxBufferLength: 10,
+            enableWorker: true,
+            lowLatencyMode: true
+          });
+          hlsRef.current = hls;
+
+          hls.loadSource(src);
+          hls.attachMedia(video);
+
+          hls.on(Hls.Events.ERROR, (event, data) => {
+            if (data.fatal) {
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  hls.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  hls.recoverMediaError();
+                  break;
+                default:
+                  console.error("Fatal HLS error, disabling stream.");
+                  setLoadError(true);
+                  hls.destroy();
+                  break;
+              }
+            }
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load HLS engine:", err);
+          setLoadError(true);
+        });
     }
 
     return () => {
@@ -71,7 +80,7 @@ export const HeroVideo = ({ src, poster = "" }) => {
   // If there's an error loading the video stream, show a clean dark background
   if (loadError) {
     return (
-      <div className="absolute inset-0 w-full h-full bg-[#050505] pointer-events-none select-none" />
+      <div className="absolute inset-0 w-full h-full bg-[#030303] pointer-events-none select-none" />
     );
   }
 
@@ -83,6 +92,7 @@ export const HeroVideo = ({ src, poster = "" }) => {
       muted
       loop
       playsInline
+      preload="metadata"
       poster={poster}
     />
   );

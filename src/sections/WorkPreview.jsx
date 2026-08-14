@@ -37,18 +37,19 @@ export const WorkPreview = () => {
     return () => ctx.revert();
   }, [isReducedMotion]);
 
-  // Show approximately 3 selected projects on the landing page
+  // Show top 3 selected projects on the homepage preview
   const selectedProjects = projects.slice(0, 3);
 
   return (
     <Section id="work-preview" className="bg-[#030303]">
       <div ref={triggerRef}>
         <Container>
+          
           {/* Header Area */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16 select-none">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16 sm:mb-20 select-none">
             
-            {/* Left side label + headline */}
-            <div className="lg:col-span-6 flex flex-col items-start">
+            {/* Left Column: Eyebrow + Asymmetric Display Heading */}
+            <div className="lg:col-span-7 flex flex-col items-start">
               <div ref={labelRef} className="flex items-center gap-4 mb-8">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase">
                   03 / Selected Work
@@ -56,34 +57,38 @@ export const WorkPreview = () => {
                 <div className="w-12 h-[1px] bg-white/10" />
               </div>
 
-              {/* Huge heading */}
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight leading-none uppercase">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-light tracking-tight leading-[1.05] uppercase">
                 <span className="clip-container block">
-                  <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block">
-                    Selected
+                  <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block text-white">
+                    Things I've
                   </span>
                 </span>
                 <span className="clip-container block text-neutral-400">
                   <span ref={(el) => (headingLinesRef.current[1] = el)} className="inline-block">
-                    Work.
+                    Engineered &
+                  </span>
+                </span>
+                <span className="clip-container block">
+                  <span ref={(el) => (headingLinesRef.current[2] = el)} className="inline-block text-white">
+                    Built.
                   </span>
                 </span>
               </h2>
             </div>
 
-            {/* Right side description */}
-            <div className="lg:col-span-6 lg:mt-16">
+            {/* Right Column: Supporting Description */}
+            <div className="lg:col-span-5 lg:mt-16">
               <p
                 ref={textRef}
-                className="text-neutral-400 text-sm md:text-base font-light leading-relaxed max-w-md"
+                className="text-neutral-300 text-sm sm:text-base font-light leading-relaxed max-w-md"
               >
-                A selection of interfaces, interactive experiences and frontend projects built with a focus on design, performance and interaction.
+                A curated selection of web applications, 3D interactive portals, and modern frontend interfaces engineered for speed, clean architecture, and visual craft.
               </p>
             </div>
 
           </div>
 
-          {/* Project List containing alternating cards */}
+          {/* Project List containing alternating showcase cards */}
           <div ref={listRef} className="border-t border-white/5 divide-y divide-white/5">
             {selectedProjects.map((project, idx) => (
               <ProjectCard
@@ -91,20 +96,23 @@ export const WorkPreview = () => {
                 number={project.number}
                 title={project.title}
                 category={project.category}
+                isFeatured={project.isFeatured}
                 description={project.description}
                 technologies={project.technologies}
                 image={project.image}
                 video={project.video}
                 slug={project.slug}
-                isAlternate={idx % 2 !== 0} // Alternate columns
+                liveUrl={project.liveUrl}
+                githubUrl={project.githubUrl}
+                isAlternate={idx % 2 !== 0}
               />
             ))}
           </div>
 
           {/* Bottom Action CTA Trigger */}
-          <div ref={ctaRef} className="flex flex-col items-center text-center mt-12 select-none">
-            <p className="text-[10px] font-mono tracking-widest text-neutral-600 uppercase mb-4">
-              Want to see more?
+          <div ref={ctaRef} className="flex flex-col items-center text-center mt-16 select-none">
+            <p className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase mb-4">
+              Explore the full archive
             </p>
             <MagneticButton>
               <Button to="/work" variant="secondary" className="px-8 py-4">

@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bhaskar.dev/sitemap.xml
+Sitemap: https://my-portfolio-orqiva.vercel.app/sitemap.xml

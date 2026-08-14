@@ -2,7 +2,7 @@
 export const siteConfig = {
   developer: {
     name: "Bhaskar",
-    role: "Frontend Web Developer",
+    role: "Full-Stack Developer",
     email: "bhaskarc693@gmail.com",
     phone: "8588915636",
     location: "India"

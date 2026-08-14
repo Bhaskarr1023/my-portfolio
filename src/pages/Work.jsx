@@ -16,6 +16,8 @@ export const Work = () => {
   const isReducedMotion = useReducedMotion();
 
   useEffect(() => {
+    document.title = "Selected Work — Bhaskar | Frontend & Full-Stack Developer";
+
     const ctx = gsap.context(() => {
       revealFadeUp(labelRef.current, triggerRef.current, isReducedMotion);
       revealTextLines(headingLinesRef.current, triggerRef.current, isReducedMotion);
@@ -27,45 +29,48 @@ export const Work = () => {
       }
     });
 
-    return () => ctx.revert();
+    return () => {
+      document.title = "Bhaskar — Frontend Web Developer";
+      ctx.revert();
+    };
   }, [isReducedMotion]);
 
   return (
-    <div className="w-full bg-[#030303] min-h-screen pt-24">
+    <div className="w-full bg-[#030303] min-h-screen pt-20 sm:pt-24">
       <Section id="work-page" className="py-12 md:py-20">
         <div ref={triggerRef}>
           <Container>
             
             {/* Header section */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20 select-none">
-              <div className="lg:col-span-6 flex flex-col items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16 sm:mb-20 select-none">
+              <div className="lg:col-span-7 flex flex-col items-start">
                 <div ref={labelRef} className="flex items-center gap-4 mb-6">
                   <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase">
-                    03 / Showcase
+                    03 / Archive & Showcase
                   </span>
                   <div className="w-12 h-[1px] bg-white/10" />
                 </div>
 
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight leading-none uppercase">
                   <span className="clip-container block">
-                    <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block">
+                    <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block text-white">
                       Selected
                     </span>
                   </span>
                   <span className="clip-container block text-neutral-400">
                     <span ref={(el) => (headingLinesRef.current[1] = el)} className="inline-block">
-                      Work.
+                      Projects.
                     </span>
                   </span>
                 </h1>
               </div>
 
-              <div className="lg:col-span-6 lg:mt-12">
+              <div className="lg:col-span-5 lg:mt-12">
                 <p
                   ref={textRef}
-                  className="text-neutral-400 text-sm md:text-base font-light leading-relaxed max-w-md"
+                  className="text-neutral-300 text-sm sm:text-base font-light leading-relaxed max-w-md"
                 >
-                  A comprehensive archive of design layouts, frontend components, and custom interaction setups engineered for speed and clarity.
+                  A complete collection of web applications, frontend architecture case studies, and 3D interactive experiences engineered with modern web standards.
                 </p>
               </div>
             </div>
@@ -78,11 +83,14 @@ export const Work = () => {
                   number={project.number}
                   title={project.title}
                   category={project.category}
+                  isFeatured={project.isFeatured}
                   description={project.description}
                   technologies={project.technologies}
                   image={project.image}
                   video={project.video}
                   slug={project.slug}
+                  liveUrl={project.liveUrl}
+                  githubUrl={project.githubUrl}
                   isAlternate={idx % 2 !== 0}
                 />
               ))}

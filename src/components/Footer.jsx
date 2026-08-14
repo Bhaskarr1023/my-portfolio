@@ -9,7 +9,7 @@ export const Footer = () => {
   return (
     <footer className="w-full bg-[#030303] border-t border-white/5 py-12 md:py-20 relative z-20">
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 items-start mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 items-start mb-16 select-none">
           {/* Logo Brand column */}
           <div className="md:col-span-6">
             <Link
@@ -22,7 +22,7 @@ export const Footer = () => {
               {siteConfig.developer.role}
             </p>
             <p className="text-neutral-600 font-mono text-[10px] tracking-wider uppercase mt-6">
-              Available for selected projects worldwide.
+              Available for selected full-stack & frontend projects worldwide.
             </p>
           </div>
 
@@ -73,8 +73,18 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
+                <a
+                  href="https://github.com/bhaskarc693"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  github.com/bhaskarc693
+                </a>
+              </li>
+              <li>
                 <span className="text-neutral-600 font-mono text-[10px] tracking-wider uppercase block mt-1">
-                  Based in {siteConfig.developer.location}
+                  Based in {siteConfig.developer.location} (GMT+5:30)
                 </span>
               </li>
             </ul>
@@ -82,7 +92,7 @@ export const Footer = () => {
         </div>
 
         {/* Divider and copyright */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-neutral-600">
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-neutral-600 select-none">
           <p>© {currentYear} {siteConfig.developer.name.toUpperCase()}. ALL RIGHTS RESERVED.</p>
           <p className="tracking-widest">DESIGN & DEV BY {siteConfig.developer.name.toUpperCase()}</p>
         </div>

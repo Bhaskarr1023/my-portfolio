@@ -9,28 +9,29 @@ export const ProjectCard = ({
   title,
   category,
   description,
-  technologies,
+  technologies = [],
   image,
   video,
   slug,
+  liveUrl,
+  githubUrl,
+  isFeatured = false,
   isAlternate = false
 }) => {
-  const cardRef = useRef(null);
   const titleRef = useRef(null);
   const arrowRef = useRef(null);
   const isReducedMotion = useReducedMotion();
 
-  // Handle title & link micro-interactions
   const onMouseEnter = () => {
-    if (isReducedMotion) return;
+    if (isReducedMotion || window.innerWidth < 1024) return;
     gsap.to(titleRef.current, {
-      x: 8,
+      x: 6,
       color: "#ffffff",
       duration: 0.3,
       ease: "power2.out"
     });
     gsap.to(arrowRef.current, {
-      x: 5,
+      x: 4,
       color: "#ffffff",
       duration: 0.3,
       ease: "power2.out"
@@ -38,10 +39,10 @@ export const ProjectCard = ({
   };
 
   const onMouseLeave = () => {
-    if (isReducedMotion) return;
+    if (isReducedMotion || window.innerWidth < 1024) return;
     gsap.to(titleRef.current, {
       x: 0,
-      color: "#e5e5e5",
+      color: "#f1f5f9",
       duration: 0.3,
       ease: "power2.out"
     });
@@ -54,83 +55,121 @@ export const ProjectCard = ({
   };
 
   return (
-    <div
-      ref={cardRef}
+    <article
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className="py-12 md:py-20 border-b border-white/5 last:border-b-0"
+      className="py-12 sm:py-16 md:py-20 border-b border-white/5 last:border-b-0"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
         
-        {/* Layout columns alternating */}
-        {/* Visual Media Column */}
+        {/* 1. Visual Media Column */}
         <div
           className={`lg:col-span-7 w-full ${
             isAlternate ? "lg:order-2" : "lg:order-1"
           }`}
         >
-          <Link to={`/work/${slug}`} className="block focus:outline-none rounded-2xl">
-            <ProjectVisual image={image} video={video} title={title} />
+          <Link
+            to={`/work/${slug}`}
+            className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-2xl group"
+            aria-label={`View case study for ${title}`}
+          >
+            <ProjectVisual
+              image={image}
+              video={video}
+              title={title}
+              number={number}
+              category={category}
+            />
           </Link>
         </div>
 
-        {/* Content Info Column */}
+        {/* 2. Content Details Column */}
         <div
           className={`lg:col-span-5 flex flex-col items-start select-none ${
             isAlternate ? "lg:order-1" : "lg:order-2"
           }`}
         >
-          {/* Top Identifier */}
-          <div className="flex items-center gap-4 mb-4 font-mono text-[10px] tracking-widest text-neutral-600">
-            <span>{number}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-neutral-800" />
-            <span className="text-neutral-500 uppercase">{category}</span>
+          {/* Eyebrow & Badges */}
+          <div className="flex flex-wrap items-center gap-3 mb-4 font-mono text-[10px] tracking-widest uppercase">
+            <span className="text-neutral-500 font-medium">{number}</span>
+            <span className="text-neutral-700">/</span>
+            <span className="text-neutral-400">{category}</span>
+            {isFeatured && (
+              <span className="text-emerald-400 bg-emerald-950/40 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[9px]">
+                Featured Project
+              </span>
+            )}
           </div>
 
           {/* Project Title */}
-          <Link to={`/work/${slug}`} className="focus:outline-none">
+          <Link
+            to={`/work/${slug}`}
+            className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white rounded-md mb-4"
+          >
             <h3
               ref={titleRef}
-              className="text-2xl sm:text-3xl font-light tracking-tight text-[#e5e5e5] uppercase mb-4 transition-colors"
+              className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight text-slate-100 uppercase transition-colors"
             >
               {title}
             </h3>
           </Link>
 
-          {/* Short description */}
+          {/* Concise Description */}
           <p className="text-neutral-400 text-sm font-light leading-relaxed mb-6 max-w-md">
             {description}
           </p>
 
-          {/* Technology tags */}
+          {/* Technology Stack Tags */}
           <div className="flex flex-wrap gap-2 mb-8">
             {technologies.map((tech) => (
               <span
                 key={tech}
-                className="text-[10px] font-mono text-neutral-500 border border-white/5 py-1 px-3.5 rounded-full uppercase select-none"
+                className="text-[10px] font-mono text-neutral-400 bg-white/[0.03] border border-white/5 py-1 px-3 rounded-full uppercase"
               >
                 {tech}
               </span>
             ))}
           </div>
 
-          {/* View Details Page Trigger */}
-          <Link
-            to={`/work/${slug}`}
-            className="inline-flex items-center text-xs font-mono tracking-widest text-neutral-400 hover:text-white uppercase transition-colors duration-200 group"
-          >
-            <span>View Project</span>
-            <span
-              ref={arrowRef}
-              className="ml-2 inline-block text-white/40 transition-transform duration-300"
+          {/* Action CTAs */}
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              to={`/work/${slug}`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black text-xs font-mono tracking-wider uppercase font-medium hover:bg-neutral-200 transition-colors"
             >
-              →
-            </span>
-          </Link>
+              <span>Case Study</span>
+              <span ref={arrowRef} className="transition-transform duration-300">→</span>
+            </Link>
+
+            {liveUrl && (
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-neutral-300 hover:text-white hover:border-white/20 text-xs font-mono tracking-wider uppercase transition-colors"
+              >
+                <span>Live Demo</span>
+                <span>↗</span>
+              </a>
+            )}
+
+            {githubUrl && (
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-neutral-300 hover:text-white hover:border-white/20 text-xs font-mono tracking-wider uppercase transition-colors"
+              >
+                <span>GitHub</span>
+                <span>↗</span>
+              </a>
+            )}
+          </div>
+
         </div>
 
       </div>
-    </div>
+    </article>
   );
 };
 

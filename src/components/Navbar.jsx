@@ -11,27 +11,43 @@ export const Navbar = () => {
   const lastScrollY = useRef(0);
   const navbarRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const mobileBackdropRef = useRef(null);
   const menuLinksRef = useRef([]);
   const location = useLocation();
   const isReducedMotion = useReducedMotion();
 
-  // Scroll listener to update compact / hidden state
+  const navLinks = [
+    { name: "Home", path: "/", num: "01" },
+    { name: "About", path: "/about", num: "02" },
+    { name: "Work", path: "/work", num: "03" },
+    { name: "Contact", path: "/contact", num: "04" }
+  ];
+
+  // Helper to check active state
+  const isActive = (path) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // Scroll listener for compact and hide/show transitions
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Compact state past 50px
-      if (currentScrollY > 50) {
+      // Compact state past 40px
+      if (currentScrollY > 40) {
         setIsCompact(true);
       } else {
         setIsCompact(false);
       }
 
-      // Hide/Show based on scroll direction past 300px
-      if (currentScrollY > 300) {
-        if (currentScrollY > lastScrollY.current) {
+      // Hide / reveal on scroll direction past 250px
+      if (currentScrollY > 250) {
+        if (currentScrollY > lastScrollY.current + 5) {
           setIsHidden(true); // scrolling down
-        } else {
+        } else if (currentScrollY < lastScrollY.current - 5) {
           setIsHidden(false); // scrolling up
         }
       } else {
@@ -50,52 +66,66 @@ export const Navbar = () => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // GSAP animation for mobile menu
+  // GSAP animation for mobile menu open/close
   useEffect(() => {
     const menu = mobileMenuRef.current;
-    const links = menuLinksRef.current;
+    const backdrop = mobileBackdropRef.current;
+    const links = menuLinksRef.current.filter(Boolean);
 
-    if (!menu) return;
+    if (!menu || !backdrop) return;
 
     if (mobileMenuOpen) {
-      // Prevent background scrolling
       document.body.style.overflow = "hidden";
+      gsap.killTweensOf([menu, backdrop, links]);
 
-      gsap.killTweensOf([menu, links]);
-      
-      // Animate menu in
-      gsap.to(menu, {
-        x: 0,
-        duration: isReducedMotion ? 0.2 : 0.5,
-        ease: "power3.out"
+      // Animate backdrop fade in
+      gsap.to(backdrop, {
+        opacity: 1,
+        pointerEvents: "auto",
+        duration: isReducedMotion ? 0.15 : 0.35,
+        ease: "power2.out"
       });
 
-      // Stagger link entries
+      // Slide and reveal mobile drawer
+      gsap.to(menu, {
+        x: 0,
+        opacity: 1,
+        duration: isReducedMotion ? 0.2 : 0.45,
+        ease: "power4.out"
+      });
+
+      // Stagger link entrance
       if (!isReducedMotion) {
         gsap.fromTo(
           links,
-          { opacity: 0, y: 30 },
+          { opacity: 0, x: 25 },
           {
             opacity: 1,
-            y: 0,
+            x: 0,
             duration: 0.4,
-            stagger: 0.1,
-            ease: "power2.out",
-            delay: 0.2
+            stagger: 0.08,
+            ease: "power3.out",
+            delay: 0.15
           }
         );
       } else {
-        gsap.set(links, { opacity: 1, y: 0 });
+        gsap.set(links, { opacity: 1, x: 0 });
       }
     } else {
       document.body.style.overflow = "";
+      gsap.killTweensOf([menu, backdrop, links]);
 
-      gsap.killTweensOf([menu, links]);
+      gsap.to(backdrop, {
+        opacity: 0,
+        pointerEvents: "none",
+        duration: isReducedMotion ? 0.15 : 0.3,
+        ease: "power2.in"
+      });
 
-      // Animate menu out
       gsap.to(menu, {
         x: "100%",
-        duration: isReducedMotion ? 0.2 : 0.4,
+        opacity: 0,
+        duration: isReducedMotion ? 0.2 : 0.35,
         ease: "power3.in"
       });
     }
@@ -105,152 +135,183 @@ export const Navbar = () => {
     };
   }, [mobileMenuOpen, isReducedMotion]);
 
-  // Handle Escape key to close mobile menu
+  // Close on Escape key press
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && mobileMenuOpen) {
         setMobileMenuOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [mobileMenuOpen]);
 
-  // Navbar entrance animation on page load
+  // Initial load entrance animation
   useEffect(() => {
     if (isReducedMotion) return;
     gsap.fromTo(
       navbarRef.current,
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.5 }
+      { y: -60, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.9, ease: "power4.out", delay: 0.2 }
     );
   }, [isReducedMotion]);
 
   return (
     <>
-      <nav
+      {/* Primary Floating Nav Wrapper */}
+      <header
         ref={navbarRef}
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 select-none ${
+        className={`fixed top-0 left-0 w-full z-50 transition-transform duration-500 ease-out select-none ${
           isHidden ? "-translate-y-full" : "translate-y-0"
-        } ${
-          isCompact
-            ? "py-4 bg-[#030303]/80 backdrop-blur-md border-b border-white/5"
-            : "py-6 bg-transparent"
-        }`}
+        } ${isCompact ? "py-3 sm:py-4" : "py-5 sm:py-7"}`}
       >
-        <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
-          {/* Logo Brand */}
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 w-full flex items-center justify-between">
+          
+          {/* Brand Identity / Home Link */}
           <Link
             to="/"
-            className="text-sm font-semibold tracking-widest text-white uppercase"
+            className="group flex items-center gap-3 py-1.5 focus-visible:ring-1 focus-visible:ring-white rounded-md"
             aria-label="Bhaskar Homepage"
           >
-            {siteConfig.developer.name}
+            <span className="font-display font-medium tracking-widest text-sm sm:text-base text-white uppercase group-hover:text-neutral-300 transition-colors">
+              {siteConfig.developer.name}
+            </span>
+            <span className="hidden sm:inline-block text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+              / Dev
+            </span>
           </Link>
 
-          {/* Desktop Navigation Link items */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link
-              to="/about"
-              className="text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider transition-colors duration-200"
-            >
-              About
-            </Link>
-            <Link
-              to="/work"
-              className="text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider transition-colors duration-200"
-            >
-              Work
-            </Link>
-            <Link
-              to="/contact"
-              className="text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider transition-colors duration-200"
-            >
-              Contact
-            </Link>
-          </div>
+          {/* Desktop Navigation Links Pill Container */}
+          <nav
+            aria-label="Main Navigation"
+            className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-300 ${
+              isCompact
+                ? "bg-[#08080c]/85 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/50"
+                : "bg-white/[0.03] backdrop-blur-md border border-white/5 hover:border-white/10"
+            }`}
+          >
+            {navLinks.map((link) => {
+              const active = isActive(link.path);
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative px-4 py-1.5 rounded-full text-xs font-mono tracking-wider transition-all duration-200 ${
+                    active
+                      ? "text-white bg-white/[0.1] border border-white/15 shadow-sm"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <span className="uppercase">{link.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
 
-          {/* Availability Indicator status dot */}
+          {/* Desktop Right Status Badge */}
           <div className="hidden lg:flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-green-500 status-dot-pulse" />
-            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
-              Available for selected projects
-            </span>
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/8 backdrop-blur-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 status-dot-pulse" />
+              <span className="text-[10px] font-mono text-neutral-300 tracking-wider uppercase">
+                Available for work
+              </span>
+            </div>
           </div>
 
-          {/* Mobile Hamburguer Toggle Menu Button */}
+          {/* Mobile Hamburger Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex flex-col justify-center items-end gap-1.5 w-6 h-6 z-50 group cursor-pointer focus:outline-none"
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            className="md:hidden relative flex flex-col justify-center items-center w-10 h-10 rounded-full bg-white/[0.05] border border-white/10 text-white z-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors hover:bg-white/[0.08]"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav-drawer"
           >
             <span
-              className={`h-0.5 bg-white transition-all duration-300 ${
-                mobileMenuOpen ? "rotate-45 translate-y-2 w-6" : "w-6"
+              className={`block h-0.5 bg-white transition-all duration-300 ease-out ${
+                mobileMenuOpen ? "w-5 rotate-45 translate-y-[3px]" : "w-5 -translate-y-1"
               }`}
             />
             <span
-              className={`h-0.5 bg-white transition-all duration-300 ${
-                mobileMenuOpen ? "opacity-0 w-0" : "w-4 group-hover:w-6"
-              }`}
-            />
-            <span
-              className={`h-0.5 bg-white transition-all duration-300 ${
-                mobileMenuOpen ? "-rotate-45 -translate-y-2 w-6" : "w-5 group-hover:w-6"
+              className={`block h-0.5 bg-white transition-all duration-300 ease-out ${
+                mobileMenuOpen ? "w-5 -rotate-45 -translate-y-[1px]" : "w-5 translate-y-1"
               }`}
             />
           </button>
         </div>
-      </nav>
+      </header>
 
-      {/* Mobile Drawer Menu Modal */}
+      {/* Mobile Menu Backdrop */}
       <div
+        ref={mobileBackdropRef}
+        onClick={() => setMobileMenuOpen(false)}
+        className="fixed inset-0 bg-black/70 backdrop-blur-md z-40 md:hidden opacity-0 pointer-events-none transition-opacity"
+        aria-hidden="true"
+      />
+
+      {/* Mobile Navigation Drawer */}
+      <aside
+        id="mobile-nav-drawer"
         ref={mobileMenuRef}
-        className="fixed inset-0 top-0 right-0 w-full h-screen bg-[#070707] z-40 flex flex-col justify-center px-12 md:hidden"
+        className="fixed top-0 right-0 w-full max-w-sm h-screen bg-[#070709] border-l border-white/10 z-40 flex flex-col justify-between p-8 sm:p-10 md:hidden opacity-0 shadow-2xl"
         style={{ transform: "translateX(100%)" }}
+        aria-label="Mobile Navigation"
       >
-        {/* Availability indicator for mobile inside menu */}
-        <div className="absolute top-24 left-12 flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-green-500 status-dot-pulse" />
-          <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">
-            Available for selected projects
-          </span>
+        {/* Top Header info */}
+        <div className="pt-16 select-none">
+          <div className="flex items-center gap-2 mb-8 font-mono text-[10px] tracking-widest text-neutral-500 uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 status-dot-pulse" />
+            <span className="text-emerald-400">Available for projects</span>
+          </div>
+
+          <p className="text-xs font-mono uppercase tracking-widest text-neutral-600 mb-6">
+            Menu Navigation
+          </p>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-5 text-left">
+            {navLinks.map((link, idx) => {
+              const active = isActive(link.path);
+              return (
+                <Link
+                  key={link.path}
+                  ref={(el) => (menuLinksRef.current[idx] = el)}
+                  to={link.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`group flex items-center justify-between py-2 text-2xl sm:text-3xl font-light tracking-wide uppercase transition-colors ${
+                    active ? "text-white font-normal" : "text-neutral-400 hover:text-white"
+                  }`}
+                >
+                  <span className="flex items-center gap-4">
+                    <span className="font-mono text-xs text-neutral-600 group-hover:text-neutral-400 transition-colors">
+                      {link.num}
+                    </span>
+                    <span>{link.name}</span>
+                  </span>
+                  {active && (
+                    <span className="w-2 h-2 rounded-full bg-white shadow-sm" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Dynamic Route Items */}
-        <div className="flex flex-col gap-8 text-left">
-          <Link
-            ref={(el) => (menuLinksRef.current[0] = el)}
-            to="/about"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-4xl font-light tracking-widest text-neutral-400 hover:text-white uppercase transition-colors"
-          >
-            About
-          </Link>
-          <Link
-            ref={(el) => (menuLinksRef.current[1] = el)}
-            to="/work"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-4xl font-light tracking-widest text-neutral-400 hover:text-white uppercase transition-colors"
-          >
-            Work
-          </Link>
-          <Link
-            ref={(el) => (menuLinksRef.current[2] = el)}
-            to="/contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-4xl font-light tracking-widest text-neutral-400 hover:text-white uppercase transition-colors"
-          >
-            Contact
-          </Link>
+        {/* Bottom Drawer Footer */}
+        <div className="pt-8 border-t border-white/5 space-y-4 font-mono text-[10px] tracking-widest text-neutral-500 uppercase">
+          <div>
+            <p className="text-neutral-600 mb-1">Direct Contact</p>
+            <a
+              href={`mailto:${siteConfig.developer.email}`}
+              className="text-xs text-white lowercase tracking-normal font-sans font-light hover:underline"
+            >
+              {siteConfig.developer.email}
+            </a>
+          </div>
+          <p className="text-neutral-600 text-[9px] pt-2">
+            © {new Date().getFullYear()} {siteConfig.developer.name.toUpperCase()} · FULL-STACK DEV
+          </p>
         </div>
-
-        {/* Bottom small copyright metadata info in mobile menu */}
-        <div className="absolute bottom-12 left-12 font-mono text-[9px] text-neutral-600 uppercase tracking-widest">
-          © {new Date().getFullYear()} {siteConfig.developer.name.toUpperCase()}
-        </div>
-      </div>
+      </aside>
     </>
   );
 };

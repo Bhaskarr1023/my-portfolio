@@ -5,9 +5,9 @@ import MagneticButton from "../components/MagneticButton";
 
 export const NotFound = () => {
   useEffect(() => {
-    document.title = "Page Not Found — Bhaskar";
+    document.title = "404: Page Not Found — Bhaskar";
     return () => {
-      document.title = "Bhaskar — Frontend Web Developer";
+      document.title = "Bhaskar — Full-Stack Developer | Creative Web Experiences";
     };
   }, []);
 
@@ -18,7 +18,7 @@ export const NotFound = () => {
 
       <Container className="text-center relative z-10">
         <p className="text-neutral-600 font-mono tracking-widest text-[10px] sm:text-xs uppercase mb-4">
-          [ ERROR: 4404 ]
+          [ ERROR: 404 ]
         </p>
         
         {/* Oversized typography */}
@@ -31,7 +31,7 @@ export const NotFound = () => {
         </h2>
         
         <p className="text-neutral-500 max-w-sm mx-auto text-xs md:text-sm font-light leading-relaxed mb-8">
-          The page you are trying to find does not exist or has been shifted.
+          The page you are trying to find does not exist or has been relocated.
         </p>
 
         <MagneticButton>

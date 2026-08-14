@@ -53,7 +53,7 @@ export const ContactSection = () => {
               {/* Main Heading */}
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.2rem] font-light tracking-tight leading-tight uppercase mb-6">
                 <span className="clip-container block">
-                  <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block">
+                  <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block text-white">
                     Let's Build
                   </span>
                 </span>
@@ -63,7 +63,7 @@ export const ContactSection = () => {
                   </span>
                 </span>
                 <span className="clip-container block">
-                  <span ref={(el) => (headingLinesRef.current[2] = el)} className="inline-block">
+                  <span ref={(el) => (headingLinesRef.current[2] = el)} className="inline-block text-white">
                     Great.
                   </span>
                 </span>
@@ -72,47 +72,59 @@ export const ContactSection = () => {
               {/* Description */}
               <p
                 ref={textRef}
-                className="text-neutral-400 text-sm font-light leading-relaxed mb-8 max-w-md"
+                className="text-neutral-300 text-sm font-light leading-relaxed mb-8 max-w-md"
               >
-                Have a project, idea or digital experience in mind? Tell me a little about it and I'll get back to you to map out details.
+                Have a project, idea, or digital experience in mind? Send me a message and I'll get back to you to map out details and discuss collaboration.
               </p>
 
               {/* Direct Info Rows */}
               <div
                 ref={detailsRef}
-                className="space-y-6 font-mono text-[10px] tracking-widest text-neutral-500 uppercase pt-4 border-t border-white/5"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-6 font-mono text-[10px] tracking-widest text-neutral-500 uppercase pt-6 border-t border-white/5"
               >
                 <div>
-                  <p className="text-neutral-600 mb-1">Email directly</p>
+                  <p className="text-neutral-600 mb-1 text-[9px]">Email directly</p>
                   <a
                     href={`mailto:${siteConfig.developer.email}`}
-                    className="text-xs text-white hover:underline lowercase tracking-normal font-sans font-light"
+                    className="text-xs text-white hover:underline lowercase tracking-normal font-sans font-light block"
                   >
                     {siteConfig.developer.email}
                   </a>
                 </div>
 
                 <div>
-                  <p className="text-neutral-600 mb-1">Call / Message</p>
+                  <p className="text-neutral-600 mb-1 text-[9px]">Call / Message</p>
                   <a
                     href={`tel:${siteConfig.developer.phone}`}
-                    className="text-xs text-white hover:underline font-sans font-light"
+                    className="text-xs text-white hover:underline font-sans font-light block"
                   >
                     +{siteConfig.developer.phone}
                   </a>
                 </div>
 
                 <div>
-                  <p className="text-neutral-600 mb-1">Location</p>
+                  <p className="text-neutral-600 mb-1 text-[9px]">Location</p>
                   <p className="text-xs text-white font-sans font-light tracking-normal">
                     {siteConfig.developer.location} (GMT+5:30)
                   </p>
+                </div>
+
+                <div>
+                  <p className="text-neutral-600 mb-1 text-[9px]">GitHub Profile</p>
+                  <a
+                    href="https://github.com/bhaskarc693"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-white hover:underline lowercase tracking-normal font-sans font-light block"
+                  >
+                    github.com/bhaskarc693
+                  </a>
                 </div>
               </div>
 
             </div>
 
-            {/* Right Column: Contact Form (Positioned at top/middle of right side) */}
+            {/* Right Column: Contact Form */}
             <div ref={formRef} className="lg:col-span-7 w-full">
               <ContactForm />
             </div>

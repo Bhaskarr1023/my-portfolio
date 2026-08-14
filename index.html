@@ -5,28 +5,71 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- Google Fonts Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://my-portfolio-orqiva.vercel.app/" />
+
     <!-- Primary Meta Tags -->
-    <title>Bhaskar — Frontend Web Developer</title>
-    <meta name="title" content="Bhaskar — Frontend Web Developer" />
-    <meta name="description" content="Bhaskar is a frontend web developer creating modern, interactive, and visually refined digital experiences using React, JavaScript, GSAP, Three.js, and UI/UX principles." />
-    <meta name="keywords" content="frontend developer, React developer, JavaScript developer, UI/UX, GSAP, Three.js, interactive web development, portfolio, Bhaskar" />
+    <title>Bhaskar — Full-Stack Developer | Creative Web Experiences</title>
+    <meta name="title" content="Bhaskar — Full-Stack Developer | Creative Web Experiences" />
+    <meta name="description" content="Bhaskar is a frontend-focused full-stack developer building modern React applications, interactive interfaces, GSAP experiences, and immersive 3D web experiences." />
+    <meta name="keywords" content="Bhaskar, Full-Stack Developer, React Developer, JavaScript Developer, Frontend Developer, Web Developer, GSAP, Three.js, Creative Web Development" />
     <meta name="author" content="Bhaskar" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#030303" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://bhaskar.dev/" />
-    <meta property="og:title" content="Bhaskar — Frontend Web Developer" />
-    <meta property="og:description" content="Bhaskar is a frontend web developer creating modern, interactive, and visually refined digital experiences using React, JavaScript, GSAP, Three.js, and UI/UX principles." />
-    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:url" content="https://my-portfolio-orqiva.vercel.app/" />
+    <meta property="og:site_name" content="Bhaskar Portfolio" />
+    <meta property="og:title" content="Bhaskar — Full-Stack Developer | Creative Web Experiences" />
+    <meta property="og:description" content="Bhaskar is a frontend-focused full-stack developer building modern React applications, interactive interfaces, GSAP experiences, and immersive 3D web experiences." />
+    <meta property="og:image" content="https://my-portfolio-orqiva.vercel.app/og-image.svg" />
 
-    <!-- Twitter -->
+    <!-- Twitter / X -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://bhaskar.dev/" />
-    <meta property="twitter:title" content="Bhaskar — Frontend Web Developer" />
-    <meta property="twitter:description" content="Bhaskar is a frontend web developer creating modern, interactive, and visually refined digital experiences using React, JavaScript, GSAP, Three.js, and UI/UX principles." />
-    <meta property="twitter:image" content="/og-image.jpg" />
+    <meta property="twitter:url" content="https://my-portfolio-orqiva.vercel.app/" />
+    <meta property="twitter:title" content="Bhaskar — Full-Stack Developer | Creative Web Experiences" />
+    <meta property="twitter:description" content="Bhaskar is a frontend-focused full-stack developer building modern React applications, interactive interfaces, GSAP experiences, and immersive 3D web experiences." />
+    <meta property="twitter:image" content="https://my-portfolio-orqiva.vercel.app/og-image.svg" />
+
+    <!-- JSON-LD Structured Data (Schema.org Person & WebSite) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://my-portfolio-orqiva.vercel.app/#person",
+          "name": "Bhaskar",
+          "jobTitle": "Full-Stack Developer",
+          "url": "https://my-portfolio-orqiva.vercel.app/",
+          "email": "bhaskarc693@gmail.com",
+          "telephone": "+918588915636",
+          "sameAs": [
+            "https://github.com/bhaskarc693"
+          ],
+          "description": "Frontend-focused full-stack developer building modern React applications, interactive interfaces, GSAP experiences, and immersive 3D web experiences."
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://my-portfolio-orqiva.vercel.app/#website",
+          "url": "https://my-portfolio-orqiva.vercel.app/",
+          "name": "Bhaskar — Full-Stack Developer Portfolio",
+          "description": "Portfolio of Bhaskar, a full-stack web developer specializing in React, JavaScript, GSAP, and creative 3D interfaces.",
+          "publisher": {
+            "@id": "https://my-portfolio-orqiva.vercel.app/#person"
+          }
+        }
+      ]
+    }
+    </script>
   </head>
-  <body class="bg-black text-white selection:bg-white/20 selection:text-white">
+  <body class="bg-[#030303] text-white selection:bg-white selection:text-black">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

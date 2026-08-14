@@ -3,9 +3,9 @@ import ContactSection from "../sections/ContactSection";
 
 export const Contact = () => {
   useEffect(() => {
-    document.title = "Contact Bhaskar — Frontend Developer";
+    document.title = "Contact Bhaskar — Full-Stack Developer";
     return () => {
-      document.title = "Bhaskar — Frontend Web Developer";
+      document.title = "Bhaskar — Full-Stack Developer | Creative Web Experiences";
     };
   }, []);
 

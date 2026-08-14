@@ -2,23 +2,23 @@ import React, { useRef } from "react";
 import gsap from "gsap";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
-export const ProjectVisual = ({ image, video, title }) => {
+export const ProjectVisual = ({ image, video, title, number = "01", category = "Project" }) => {
   const containerRef = useRef(null);
   const mediaRef = useRef(null);
   const isReducedMotion = useReducedMotion();
 
-  // Hover animations to scale the media layer without layout shifts
+  // Hover scale animation without layout shifts
   const onMouseEnter = () => {
-    if (isReducedMotion) return;
+    if (isReducedMotion || window.innerWidth < 1024) return;
     gsap.to(mediaRef.current, {
-      scale: 1.05,
+      scale: 1.03,
       duration: 0.5,
       ease: "power2.out"
     });
   };
 
   const onMouseLeave = () => {
-    if (isReducedMotion) return;
+    if (isReducedMotion || window.innerWidth < 1024) return;
     gsap.to(mediaRef.current, {
       scale: 1.0,
       duration: 0.5,
@@ -31,10 +31,10 @@ export const ProjectVisual = ({ image, video, title }) => {
       ref={containerRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className="relative w-full aspect-[16/10] bg-neutral-900 border border-white/5 rounded-2xl overflow-hidden group select-none transition-colors duration-300 hover:border-white/25"
+      className="relative w-full aspect-[16/10] bg-[#070709] border border-white/8 rounded-2xl overflow-hidden group select-none transition-colors duration-300 hover:border-white/25"
     >
       {/* Dark overlay vignette */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10 pointer-events-none" />
 
       {/* Media container */}
       <div ref={mediaRef} className="w-full h-full transform transition-transform duration-500 origin-center">
@@ -55,40 +55,43 @@ export const ProjectVisual = ({ image, video, title }) => {
             loading="lazy"
           />
         ) : (
-          /* Premium editorial-style geometric placeholder */
-          <div className="w-full h-full bg-[#090909] flex flex-col justify-between p-8 relative overflow-hidden">
-            {/* Tech grid mesh effect */}
-            <div className="absolute inset-0 w-full h-full border-[1px] border-white/[0.02] grid grid-cols-6 grid-rows-6 pointer-events-none">
-              <div className="border-r border-b border-white/[0.02]" />
-              <div className="border-r border-b border-white/[0.02]" />
-              <div className="border-r border-b border-white/[0.02]" />
-              <div className="border-r border-b border-white/[0.02]" />
-              <div className="border-r border-b border-white/[0.02]" />
-              <div className="border-r border-b border-white/[0.02]" />
+          /* Editorial Geometric Technical Placeholder */
+          <div className="w-full h-full bg-[#08080a] flex flex-col justify-between p-6 sm:p-8 relative overflow-hidden">
+            {/* Tech grid mesh */}
+            <div className="absolute inset-0 w-full h-full border border-white/[0.03] grid grid-cols-4 sm:grid-cols-6 grid-rows-4 sm:grid-rows-6 pointer-events-none">
+              {Array.from({ length: 24 }).map((_, idx) => (
+                <div key={idx} className="border-r border-b border-white/[0.02]" />
+              ))}
             </div>
 
-            {/* Glowing circular element */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-white/[0.02] blur-2xl pointer-events-none" />
+            {/* Glowing ambient element */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-white/[0.02] blur-3xl pointer-events-none" />
 
-            {/* Metadata tags */}
-            <div className="flex justify-between items-start relative z-10 font-mono text-[9px] text-neutral-600 tracking-widest uppercase">
-              <span>[ Platform / Dev ]</span>
-              <span>Workspace Ref // 00{title.length}</span>
+            {/* Top metadata tags */}
+            <div className="flex justify-between items-start relative z-10 font-mono text-[9px] sm:text-[10px] text-neutral-500 tracking-widest uppercase">
+              <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/5">
+                {category}
+              </span>
+              <span>DEV ARCHIVE // {number}</span>
             </div>
 
-            {/* Huge centered letter */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="text-[10rem] font-light text-white/[0.02] uppercase tracking-tighter select-none font-mono">
+            {/* Centered Large Display Letter */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+              <span className="text-[7rem] sm:text-[10rem] font-light text-white/[0.03] uppercase tracking-tighter font-display">
                 {title.charAt(0)}
               </span>
             </div>
 
             {/* Bottom identifier */}
             <div className="flex justify-between items-end relative z-10">
-              <span className="font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
-                {title}
+              <div>
+                <p className="font-mono text-[10px] text-neutral-400 tracking-widest uppercase">
+                  {title}
+                </p>
+              </div>
+              <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-widest">
+                [ Interactive Case Study ]
               </span>
-              <span className="text-white/30 text-xs font-mono select-none">// interactive</span>
             </div>
           </div>
         )}

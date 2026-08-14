@@ -6,7 +6,7 @@ import ProjectVisual from "../components/ProjectVisual";
 import Button from "../components/Button";
 import MagneticButton from "../components/MagneticButton";
 import { projects } from "../data/projects";
-import { revealFadeUp, revealTextLines } from "../animations/revealAnimations";
+import { revealFadeUp, revealTextLines, revealStagger } from "../animations/revealAnimations";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import gsap from "gsap";
 
@@ -14,19 +14,29 @@ export const ProjectDetail = () => {
   const { slug } = useParams();
   const triggerRef = useRef(null);
   const backBtnRef = useRef(null);
+  const badgeRef = useRef(null);
   const headingLinesRef = useRef([]);
   const metaRef = useRef(null);
   const mediaRef = useRef(null);
-  const detailsRef = useRef(null);
+  const overviewRef = useRef(null);
+  const featuresRef = useRef(null);
+  const implRef = useRef(null);
+  const stackRef = useRef(null);
+  const bottomNavRef = useRef(null);
   const isReducedMotion = useReducedMotion();
 
   // Find target project matching slug
-  const project = projects.find((p) => p.slug === slug);
+  const currentIndex = projects.findIndex((p) => p.slug === slug);
+  const project = currentIndex !== -1 ? projects[currentIndex] : null;
 
-  // Update HTML document title dynamically
+  // Previous and Next project calculation (circular navigation)
+  const prevProject = currentIndex > 0 ? projects[currentIndex - 1] : projects[projects.length - 1];
+  const nextProject = currentIndex < projects.length - 1 ? projects[currentIndex + 1] : projects[0];
+
+  // Dynamic document title
   useEffect(() => {
     if (project) {
-      document.title = `${project.title} — Bhaskar Selected Work`;
+      document.title = `${project.title} — Case Study | Bhaskar`;
     } else {
       document.title = "Project Not Found — Bhaskar";
     }
@@ -36,38 +46,50 @@ export const ProjectDetail = () => {
     };
   }, [project]);
 
-  // Entrance animations for details page
+  // Entrance animations for case study
   useEffect(() => {
     if (!project) return;
 
     const ctx = gsap.context(() => {
       revealFadeUp(backBtnRef.current, triggerRef.current, isReducedMotion);
+      revealFadeUp(badgeRef.current, triggerRef.current, isReducedMotion);
       revealTextLines(headingLinesRef.current, triggerRef.current, isReducedMotion);
       revealFadeUp(metaRef.current, triggerRef.current, isReducedMotion);
       revealFadeUp(mediaRef.current, triggerRef.current, isReducedMotion);
-      revealFadeUp(detailsRef.current, triggerRef.current, isReducedMotion);
+      revealFadeUp(overviewRef.current, triggerRef.current, isReducedMotion);
+
+      if (featuresRef.current) {
+        revealStagger(Array.from(featuresRef.current.children), triggerRef.current, isReducedMotion);
+      }
+
+      if (implRef.current) {
+        revealStagger(Array.from(implRef.current.children), triggerRef.current, isReducedMotion);
+      }
+
+      revealFadeUp(stackRef.current, triggerRef.current, isReducedMotion);
+      revealFadeUp(bottomNavRef.current, triggerRef.current, isReducedMotion);
     });
 
     return () => ctx.revert();
   }, [project, isReducedMotion]);
 
-  // Graceful fallback for invalid/missing project slugs
+  // Graceful 404 fallback for missing slugs
   if (!project) {
     return (
-      <div className="w-full bg-[#030303] min-h-screen pt-24 flex items-center justify-center relative">
-        <Container className="text-center select-none">
-          <p className="text-red-500 font-mono tracking-widest text-[10px] sm:text-xs uppercase mb-4">
-            [ ERROR: 404 ]
+      <div className="w-full bg-[#030303] min-h-screen pt-28 flex items-center justify-center relative">
+        <Container className="text-center select-none py-20">
+          <p className="text-red-500 font-mono tracking-widest text-xs uppercase mb-4">
+            [ ARCHIVE REF: 404 NOT FOUND ]
           </p>
-          <h1 className="text-3xl md:text-5xl font-light tracking-tighter uppercase mb-6">
+          <h1 className="text-4xl md:text-6xl font-light tracking-tighter uppercase mb-6 text-white">
             Project Not Found.
           </h1>
-          <p className="text-neutral-500 max-w-sm mx-auto text-xs md:text-sm font-light leading-relaxed mb-8">
-            The project workspace you are trying to view does not exist or has been removed from archives.
+          <p className="text-neutral-400 max-w-md mx-auto text-sm font-light leading-relaxed mb-8">
+            The project case study you are attempting to view does not exist or has been relocated in the archives.
           </p>
           <MagneticButton>
             <Button to="/work" variant="primary" showArrow={false}>
-              ← Back to Work
+              ← Return to Work Archive
             </Button>
           </MagneticButton>
         </Container>
@@ -76,108 +98,258 @@ export const ProjectDetail = () => {
   }
 
   return (
-    <div className="w-full bg-[#030303] min-h-screen pt-24">
-      <Section ref={triggerRef} className="py-12 md:py-20">
-        <Container>
-          
-          {/* Back Navigation Button */}
-          <div ref={backBtnRef} className="mb-12">
-            <Link
-              to="/work"
-              className="inline-flex items-center text-xs font-mono tracking-widest text-neutral-500 hover:text-white uppercase transition-colors"
-            >
-              ← Back to Work
-            </Link>
-          </div>
-
-          {/* Header Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16 select-none">
-            {/* Project title */}
-            <div className="lg:col-span-8">
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase">
-                  Project {project.number}
-                </span>
-                <div className="w-12 h-[1px] bg-white/10" />
-              </div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight leading-none uppercase">
-                <span className="clip-container block">
-                  <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block">
-                    {project.title.split(" ")[0]}
-                  </span>
-                </span>
-                <span className="clip-container block text-neutral-400">
-                  <span ref={(el) => (headingLinesRef.current[1] = el)} className="inline-block">
-                    {project.title.split(" ").slice(1).join(" ")}
-                  </span>
-                </span>
-              </h1>
-            </div>
-
-            {/* Sidebar metadata */}
-            <div
-              ref={metaRef}
-              className="lg:col-span-4 lg:text-right flex lg:flex-col justify-end items-start lg:items-end gap-6 font-mono text-[9px] tracking-widest text-neutral-500 uppercase"
-            >
-              <div>
-                <p className="text-neutral-600 mb-1">Category</p>
-                <p className="text-neutral-400">{project.category}</p>
-              </div>
-              <div>
-                <p className="text-neutral-600 mb-1">Stack</p>
-                <p className="text-neutral-400">{project.technologies.join(" / ")}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Large Project Visual Card */}
-          <div ref={mediaRef} className="mb-16">
-            <ProjectVisual image={project.image} video={project.video} title={project.title} />
-          </div>
-
-          {/* Detailed Info Columns & Action CTA Links */}
-          <div ref={detailsRef} className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 border-t border-white/5 pt-12">
+    <div className="w-full bg-[#030303] min-h-screen pt-20 sm:pt-24">
+      <Section id="project-case-study" className="py-12 md:py-20">
+        <div ref={triggerRef}>
+          <Container>
             
-            {/* Project description (Left) */}
-            <div className="lg:col-span-8 select-none">
-              <h3 className="text-xs font-mono tracking-wider text-neutral-500 uppercase mb-6">
-                Overview
-              </h3>
-              <p className="text-neutral-400 text-sm md:text-base font-light leading-relaxed max-w-2xl mb-8">
-                {project.description}
-              </p>
-              <p className="text-neutral-500 text-xs font-light leading-relaxed max-w-xl">
-                This project encapsulates a highly optimized React layout stack featuring smooth GSAP timelines. It is engineered code-wise for performance, accessibility, and strict visual aesthetics.
-              </p>
+            {/* 1. Back to Work Link */}
+            <div ref={backBtnRef} className="mb-10 select-none">
+              <Link
+                to="/work"
+                className="inline-flex items-center gap-2 text-xs font-mono tracking-widest text-neutral-500 hover:text-white uppercase transition-colors"
+              >
+                <span>←</span>
+                <span>Back to Work Archive</span>
+              </Link>
             </div>
 
-            {/* Project CTAs (Right) */}
-            <div className="lg:col-span-4 flex flex-col gap-4 items-start select-none">
-              <h3 className="text-xs font-mono tracking-wider text-neutral-500 uppercase mb-2">
-                Launch
-              </h3>
+            {/* 2. Case Study Hero Header */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16 select-none">
               
-              {/* Only render buttons if corresponding URLs exist */}
-              {project.liveUrl && (
-                <MagneticButton>
-                  <Button href={project.liveUrl} variant="primary" className="w-48">
-                    View Live Project
-                  </Button>
-                </MagneticButton>
-              )}
+              {/* Left Column: Eyebrow + Title */}
+              <div className="lg:col-span-8 flex flex-col items-start">
+                <div ref={badgeRef} className="flex items-center gap-4 mb-6">
+                  <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase">
+                    Project {project.number} / {project.category}
+                  </span>
+                  <div className="w-12 h-[1px] bg-white/10" />
+                </div>
 
-              {project.githubUrl && (
-                <MagneticButton>
-                  <Button href={project.githubUrl} variant="secondary" className="w-48">
-                    View Source
-                  </Button>
-                </MagneticButton>
-              )}
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight leading-none uppercase mb-6">
+                  <span className="clip-container block">
+                    <span ref={(el) => (headingLinesRef.current[0] = el)} className="inline-block text-white">
+                      {project.title.split(" ")[0]}
+                    </span>
+                  </span>
+                  <span className="clip-container block text-neutral-400">
+                    <span ref={(el) => (headingLinesRef.current[1] = el)} className="inline-block">
+                      {project.title.split(" ").slice(1).join(" ")}
+                    </span>
+                  </span>
+                </h1>
+
+                <p className="text-neutral-300 text-sm sm:text-base font-light leading-relaxed max-w-2xl">
+                  {project.description}
+                </p>
+              </div>
+
+              {/* Right Column: Metadata Details & CTAs */}
+              <div
+                ref={metaRef}
+                className="lg:col-span-4 flex flex-col gap-6 lg:text-right font-mono text-[10px] tracking-widest text-neutral-400 uppercase pt-2"
+              >
+                <div className="border-b border-white/5 pb-4">
+                  <p className="text-neutral-600 mb-1 text-[9px]">Role / Discipline</p>
+                  <p className="text-white font-sans font-light tracking-normal text-xs">{project.role || "Frontend Development"}</p>
+                </div>
+                <div className="border-b border-white/5 pb-4">
+                  <p className="text-neutral-600 mb-1 text-[9px]">Category</p>
+                  <p className="text-neutral-200">{project.category}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-600 mb-2 text-[9px]">Live Links</p>
+                  <div className="flex flex-wrap gap-3 lg:justify-end">
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-black text-[10px] font-mono tracking-wider uppercase font-medium hover:bg-neutral-200 transition-colors"
+                      >
+                        <span>Live Demo</span>
+                        <span>↗</span>
+                      </a>
+                    )}
+                    {project.githubUrl && (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-neutral-300 hover:text-white hover:border-white/20 text-[10px] font-mono tracking-wider uppercase transition-colors"
+                      >
+                        <span>GitHub</span>
+                        <span>↗</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+
             </div>
 
-          </div>
+            {/* 3. Hero Visual Preview */}
+            <div ref={mediaRef} className="mb-20 sm:mb-28">
+              <ProjectVisual
+                image={project.image}
+                video={project.video}
+                title={project.title}
+                number={project.number}
+                category={project.category}
+              />
+            </div>
 
-        </Container>
+            {/* 4. Project Overview Section */}
+            <div ref={overviewRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start border-t border-white/5 pt-16 mb-20 sm:mb-28">
+              <div className="lg:col-span-4 select-none">
+                <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase block mb-2">
+                  01 / Scope & Purpose
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-light tracking-tight text-white uppercase">
+                  Project Overview
+                </h3>
+              </div>
+              <div className="lg:col-span-8 space-y-4 text-neutral-300 font-light text-sm sm:text-base leading-relaxed">
+                <p>{project.overview || project.description}</p>
+                <p className="text-neutral-400 text-xs sm:text-sm">
+                  Engineered with modern frontend patterns to ensure high responsiveness, hardware-accelerated transitions, and accessible UI interactions.
+                </p>
+              </div>
+            </div>
+
+            {/* 5. Key Features Section */}
+            {project.features && project.features.length > 0 && (
+              <div className="border-t border-white/5 pt-16 mb-20 sm:mb-28">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12 select-none">
+                  <div>
+                    <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase block mb-2">
+                      02 / Capabilities
+                    </span>
+                    <h3 className="text-2xl sm:text-3xl font-light tracking-tight text-white uppercase">
+                      Key Features & Architecture
+                    </h3>
+                  </div>
+                  <p className="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                    {project.features.length} Highlights
+                  </p>
+                </div>
+
+                <div ref={featuresRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {project.features.map((feat, idx) => (
+                    <div
+                      key={idx}
+                      className="glass-card p-6 sm:p-8 rounded-2xl border border-white/5 space-y-3 hover:border-white/15 transition-all"
+                    >
+                      <div className="flex items-center justify-between font-mono text-[10px] text-neutral-500">
+                        <span>{feat.number}</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                      </div>
+                      <h4 className="text-base font-medium text-white tracking-wide">
+                        {feat.title}
+                      </h4>
+                      <p className="text-xs text-neutral-400 font-light leading-relaxed">
+                        {feat.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 6. Technical Implementation Breakdown */}
+            {project.implementation && project.implementation.length > 0 && (
+              <div className="border-t border-white/5 pt-16 mb-20 sm:mb-28">
+                <div className="mb-12 select-none">
+                  <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase block mb-2">
+                    03 / Engineering Decisions
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-light tracking-tight text-white uppercase">
+                    Development Approach
+                  </h3>
+                </div>
+
+                <div ref={implRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {project.implementation.map((impl, idx) => (
+                    <div
+                      key={idx}
+                      className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3 hover:border-white/15 transition-colors"
+                    >
+                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest block">
+                        Approach // 0{idx + 1}
+                      </span>
+                      <h4 className="text-sm font-medium text-white uppercase tracking-wider">
+                        {impl.title}
+                      </h4>
+                      <p className="text-xs text-neutral-400 font-light leading-relaxed">
+                        {impl.detail}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 7. Technology Stack Matrix */}
+            <div ref={stackRef} className="border-t border-white/5 pt-16 mb-20 sm:mb-28 select-none">
+              <div className="mb-8">
+                <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase block mb-2">
+                  04 / Technical Stack
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-light tracking-tight text-white uppercase">
+                  Technologies Used
+                </h3>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {project.technologies.map((tech) => (
+                  <div
+                    key={tech}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/8 text-neutral-200 text-xs font-mono tracking-wider uppercase hover:border-white/20 transition-colors"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                    <span>{tech}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 8. Bottom Project Pagination Navigation */}
+            <div
+              ref={bottomNavRef}
+              className="border-t border-white/5 pt-12 flex flex-col sm:flex-row items-center justify-between gap-6 select-none"
+            >
+              <Link
+                to={`/work/${prevProject.slug}`}
+                className="group flex items-center gap-4 text-left p-4 rounded-xl hover:bg-white/[0.02] transition-colors"
+              >
+                <span className="text-neutral-500 font-mono text-xs group-hover:-translate-x-1 transition-transform">←</span>
+                <div>
+                  <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-widest block">Previous Project</span>
+                  <span className="text-sm text-neutral-300 group-hover:text-white uppercase font-light">{prevProject.title}</span>
+                </div>
+              </Link>
+
+              <Link
+                to="/work"
+                className="px-4 py-2 rounded-full border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 text-xs font-mono uppercase tracking-widest transition-colors"
+              >
+                View All Work
+              </Link>
+
+              <Link
+                to={`/work/${nextProject.slug}`}
+                className="group flex items-center gap-4 text-right p-4 rounded-xl hover:bg-white/[0.02] transition-colors"
+              >
+                <div>
+                  <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-widest block">Next Project</span>
+                  <span className="text-sm text-neutral-300 group-hover:text-white uppercase font-light">{nextProject.title}</span>
+                </div>
+                <span className="text-neutral-500 font-mono text-xs group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+            </div>
+
+          </Container>
+        </div>
       </Section>
     </div>
   );
