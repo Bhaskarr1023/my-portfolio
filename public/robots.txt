@@ -1,0 +1,5 @@
+# robots.txt for Bhaskar Portfolio
+User-agent: *
+Allow: /
+
+Sitemap: https://bhaskar.dev/sitemap.xml
