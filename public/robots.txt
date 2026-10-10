@@ -1,0 +1,5 @@
+# robots.txt for Bhaskar Portfolio
+User-agent: *
+Allow: /
+
+Sitemap: https://my-portfolio-orqiva.vercel.app/sitemap.xml
